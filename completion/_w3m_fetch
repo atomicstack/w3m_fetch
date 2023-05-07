@@ -1,0 +1,44 @@
+#compdef w3m_fetch
+
+_fetch_suburls() {
+  # set -x
+  local input_url="${(Q)1}"
+  local -a fetch_result
+
+  if   [[ "$input_url" =~ '^https?:\/\/[A-Za-z.]*\/(.*\/)$' ]]; then
+    # echo "input_url [$input_url] is-a directory" 1>&2
+    fetch_result=($(w3m_dump "$input_url"))
+  elif [[ "$input_url" =~ '^https?:\/\/[A-Za-z.]*\/.*[^/]$' ]]; then
+    # echo "input_url [$input_url] is-a (maybe partial) filename" 1>&2
+    local parent=$(dirname "$input_url")
+    local search=$(basename "$input_url")
+    fetch_result=($(w3m_dump "$parent" | grep "$search"))
+  fi
+
+  # echo "################################################################################" 1>&2
+  # echo "fetch_result_length=${#fetch_result[@]}";
+  # echo "################################################################################" 1>&2
+
+  if [[ "${#fetch_result[@]}" -gt 0 ]]; then
+    compadd -- "${fetch_result[@]}"
+  fi
+
+  set +x
+  return
+}
+
+_w3m_fetch() {
+  local state cur_input
+
+  _arguments -C '1:URL:_urls'
+
+  # set -x
+  cur_input="${words[CURRENT]}"
+  # echo "cur_input=$cur_input" 1>&2
+  _fetch_suburls "$cur_input"
+  set +x
+
+  return 1
+}
+
+compdef _w3m_fetch w3m_fetch

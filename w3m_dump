@@ -1,0 +1,7 @@
+#!/bin/zsh
+
+base_url="${(Q)1}"
+w3m -dump -o display_link_number=1 "$base_url" |\
+  egrep 'https://' |\
+  egrep -v '[/][?]C=[NMSD];O=[AD]$' |\
+  awk '{print $2}'

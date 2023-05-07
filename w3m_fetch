@@ -1,0 +1,14 @@
+#!/bin/zsh
+
+for arg in "$@"; do
+  base_url="${(Q)arg}"
+
+  if ! [[ "$base_url" =~ '^http.*\/$' ]]; then
+    wget "$base_url"
+  else
+    temp_file=$(mktemp --dry-run /tmp/w3m_fetch.$(date +%F).XXXXXXXXXXX)
+    trap "{ rm '$temp_file'; }" EXIT
+    w3m_dump "$base_url" | sort | fzf -m > "$temp_file"
+    [[ -s "$temp_file" ]] && wget -ci "$temp_file"
+  fi
+done
