@@ -12,7 +12,7 @@ _fetch_suburls() {
     # echo "input_url [$input_url] is-a (maybe partial) filename" 1>&2
     local parent=$(dirname "$input_url")
     local search=$(basename "$input_url")
-    fetch_result=($(w3m_dump "$parent" | grep "$search"))
+    fetch_result=($(w3m_dump "${parent%%/}/" | grep "$search"))
   fi
 
   # echo "################################################################################" 1>&2
